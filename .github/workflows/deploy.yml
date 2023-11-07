@@ -1,0 +1,45 @@
+name: Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options: 
+          - dev
+          - prod
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Get Node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        
+    - name: Install & Build 
+      run: |
+        yarn \
+        && yarn build
+      
+    - name: AWS Auth
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: eu-west-2
+    
+    - name: Terraform
+      uses: ./.github/actions/deploy-infra
+      with:
+        env: ${{ inputs.env }}
+        working-directory: 'terraform'
+        

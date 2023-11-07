@@ -1,0 +1,37 @@
+name: Deploy Infra
+
+description: 'Deploy Infra'
+inputs:
+  env:
+    description: 'Environment to deploy to'
+    required: true
+  working-directory:
+    description: 'Working directory of TF files'
+    required: true
+    default: './infra'
+
+runs:
+    using: "composite"
+    
+    steps:
+    
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+    
+    - name: TF fmt
+      id: fmt
+      run: terraform fmt
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+  
+    - name: TF init
+      id: init
+      run: terraform init -var="env=${{ inputs.env }}" -backend-config=environments/${{ inputs.env }}.backend
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      
+    - name: TF apply
+      id: apply
+      run: terraform apply -auto-approve -var="env=${{ inputs.env }}"
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}

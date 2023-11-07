@@ -1,0 +1,2 @@
+bucket  = "ookikoi-terraform-state"
+key     = "dev/dev-council.tfstate"
