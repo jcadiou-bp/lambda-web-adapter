@@ -6,6 +6,9 @@
   "author": "jcadiou-bp <julien.cadiou@beautypie.com>",
   "license": "MIT",
   "type": "module",
+  "engines": {
+    "node": "18.x"
+  },
   "scripts": {
     "start": "node dist/server.js",
     "build": "tsc",
